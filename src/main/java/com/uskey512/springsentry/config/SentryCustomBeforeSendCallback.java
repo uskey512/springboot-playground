@@ -11,7 +11,7 @@ import io.sentry.SentryOptions;
 public class SentryCustomBeforeSendCallback implements SentryOptions.BeforeSendCallback {
     @Override
     public SentryEvent execute(SentryEvent event, Object hint) {
-        if (event.getOriginThrowable() instanceof SentryFilteredException) {
+        if (event.getThrowable() instanceof SentryFilteredException) {
             return null;
         }
         return event;
