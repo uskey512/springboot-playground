@@ -34,7 +34,6 @@ task appendReleaseInfo(dependsOn: 'generateGitProperties') {
 		File sentryConfig = file("build/resources/main/sentry.yml")
 		def release = project.ext.gitProps['git.tags'] ?: project.ext.gitProps['git.commit.id']
 		sentryConfig.append("\nrelease: " + release)
-		extProperty = release
 	}
 }
 
