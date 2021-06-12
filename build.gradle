@@ -21,6 +21,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
+dependencyUpdates.gradleReleaseChannel = "current"
+
 test {
 	useJUnitPlatform()
 }
