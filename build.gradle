@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation group: 'io.sentry', name: 'sentry-spring-boot-starter', version: '5.0.0-beta.5'
+	implementation group: 'io.sentry', name: 'sentry-spring-boot-starter', version: '5.0.1'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
@@ -24,7 +24,29 @@ test {
 }
 
 gitProperties {
-	keys = ['git.branch', 'git.commit.id', 'git.commit.time', 'git.closest.tag.name']
-	dateFormat = "yyyy-MM-dd'T'HH:mmZ"
-	dateFormatTimeZone = "PST"
+	extProperty = 'gitProps'
+}
+
+generateGitProperties.outputs.upToDateWhen { false }
+
+task appendReleaseInfo(dependsOn: 'generateGitProperties') {
+	doLast {
+		File sentryConfig = file("build/resources/main/sentry.yml")
+		def release = project.ext.gitProps['git.tags'] ?: project.ext.gitProps['git.commit.id']
+		sentryConfig.append("\nrelease: " + release)
+	}
+}
+
+build {
+	finalizedBy "appendReleaseInfo"
+}
+
+bootRun {
+	doFirst {
+		generateGitProperties
+		def release = project.ext.gitProps['git.tags'] ?: project.ext.gitProps['git.commit.id']
+		jvmArgs = [
+				'-Dsentry.release=' + release
+		]
+	}
 }
